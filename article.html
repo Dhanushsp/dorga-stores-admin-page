@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fire base CRED test</title>
+</head>
+
+<body>
+    <label>First Name</label>
+    <input type="text" id="FnameInp">
+
+    <label>Last Name</label>
+    <input type="text" id="LnameInp">
+
+    <select id="DepInp">
+        <label>Department</label>
+        <option value="B.sc">B.cs</option>
+        <option value="B.tech">B.tech</option>
+    </select>
+
+
+    <label>Student Id:</label>
+    <input type="text" id="stuId">
+
+    <button id="addBtn">Add</button>
+    <button id="retBtn">Reteive</button>
+    <button id="updBtn">Update</button>
+    <button id="delBtn">Delete</button>
+
+    <div id="result"></div>
+
+    <script type="module">
+        // Import the functions you need from the SDKs you need
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-app.js";
+        import { getDatabase, ref, child, set, get, update, remove } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-database.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyBxoUnPPj35tEiN34TcYxw-uvNueYcWhqc",
+            authDomain: "my-portfolio-f46a2.firebaseapp.com",
+            databaseURL: "https://my-portfolio-f46a2-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "my-portfolio-f46a2",
+            storageBucket: "my-portfolio-f46a2.appspot.com",
+            messagingSenderId: "613449687342",
+            appId: "1:613449687342:web:e0b8f636185031d5bb9abf"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase();
+
+        let FnameInp = document.getElementById('FnameInp');
+        let LnameInp = document.getElementById('LnameInp');
+        let DepInp = document.getElementById('DepInp');
+        let StuId = document.getElementById('stuId');
+
+        let AddBtn = document.getElementById('addBtn');
+        let RetBtn = document.getElementById('retBtn');
+        let UpdBtn = document.getElementById('updBtn');
+        let DelBtn = document.getElementById('delBtn');
+
+
+        // To add data
+        function AddData(){
+            set(ref(db, 'StudentInfo/' + StuId.value), {
+                nameOfStudent: {firstName:FnameInp.value, lastName:LnameInp.value},
+                department: DepInp.value,
+                studentId: StuId.value
+            }).then(()=>{
+                alert('Data added')
+            }).catch((err)=>{
+                alert(err);
+                console.log(err)
+            })
+        }
+
+        // to Retrive data
+        function RetData(){
+            const dbRef = ref(db);
+
+            get(child(dbRef,'StudentInfo/'+ StuId.value)).then((snapshot)=>{
+                if(snapshot.exists()){
+                    FnameInp.value = snapshot.val().nameOfStudent.firstName;
+                    LnameInp.value = snapshot.val().nameOfStudent.lastName;
+                    DepInp.value = snapshot.val().department;
+
+                }else{
+                    alert('Student does not exist')
+                }
+            }).catch((err)=>{
+                alert(err);
+                console.log(err)
+            })
+        }
+
+        // update
+        function UpdateData(){
+            update(ref(db, 'StudentInfo/' + StuId.value), {
+                nameOfStudent: {firstName:FnameInp.value, lastName:LnameInp.value},
+                department: DepInp.value,
+                
+            }).then(()=>{
+                alert('Updated')
+            }).catch((err)=>{
+                alert(err);
+                console.log(err)
+            })
+        }
+
+        // Delete 
+        function DeleteData(){
+            remove(ref(db, 'StudentInfo/' + StuId.value)).then(()=>{
+                alert('Deleted')
+            }).catch((err)=>{
+                alert(err);
+                console.log(err)
+            })
+        }
+
+        AddBtn.addEventListener('click', AddData);
+        RetBtn.addEventListener('click', RetData);
+        UpdBtn.addEventListener('click', UpdateData);
+        DelBtn.addEventListener('click', DeleteData);
+    </script>
+</body>
+
+</html>

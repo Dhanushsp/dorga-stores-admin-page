@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add and Retrive Student Data</title>
+</head>
+
+<body>
+
+    <label>First Name:</label>
+    <input type="text" id="FnameInp">
+
+    <label>Department:</label>
+    <select id="DepInp">
+        <option value="B.sc">B.sc</option>
+        <option value="B.tech">B.tech</option>
+    </select>
+
+    <label>Student Id:</label>
+    <input type="text" id="stuId">
+
+    <label>Gender:</label>
+    <select id="genderInp">
+        <option value="Male">Male</option>
+        <option value="Female">Female</option>
+    </select>
+
+    <button id="addBtn">Add</button>
+    <button id="retBtn">Retrieve</button>
+
+    <div id="resultDiv"></div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-app.js";
+        import { getDatabase, ref, set, get } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-database.js";
+
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyBxoUnPPj35tEiN34TcYxw-uvNueYcWhqc",
+            authDomain: "my-portfolio-f46a2.firebaseapp.com",
+            databaseURL: "https://my-portfolio-f46a2-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "my-portfolio-f46a2",
+            storageBucket: "my-portfolio-f46a2.appspot.com",
+            messagingSenderId: "613449687342",
+            appId: "1:613449687342:web:e0b8f636185031d5bb9abf"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+
+        // Function to add data
+        function AddData() {
+            let firstName = document.getElementById('FnameInp').value;
+            let department = document.getElementById('DepInp').value;
+            let studentId = document.getElementById('stuId').value;
+            let gender = document.getElementById('genderInp').value;
+
+            if (firstName === '' || department === '' || studentId === '') {
+                alert('Please fill out all fields');
+                return;
+            }
+
+            const studentRef = ref(db, 'Students/' + gender + '/' + studentId);
+
+            set(studentRef, {
+                name: { firstName: firstName },
+                department: department,
+                studentId: studentId
+            })
+                .then(() => {
+                    alert('Student added successfully!');
+                })
+                .catch((err) => {
+                    alert('Error: ' + err.message);
+                    console.log(err);
+                });
+        }
+
+        // Event listener for the add button
+        document.getElementById('addBtn').addEventListener('click', AddData);
+
+
+        // retrive function
+        function RetData() {
+            // Get input values for student ID and gender
+            let studentId = document.getElementById('stuId').value;
+            let gender = document.getElementById('genderInp').value; // Male or Female
+
+            // Check if Student ID is entered
+            if (studentId === '') {
+                alert('Please enter the Student ID');
+                return;
+            }
+
+            // Reference to Firebase database
+            const dbRef = ref(db, 'Students/' + gender + '/' + studentId);
+
+            // Retrieve the data from Firebase
+            get(dbRef).then((snapshot) => {
+                if (snapshot.exists()) {
+                    // Retrieve values from the snapshot
+                    const firstName = snapshot.val().name.firstName;
+                    const department = snapshot.val().department;
+                    const studentId = snapshot.val().studentId;
+
+                    // Display the data in the div
+                    document.getElementById('resultDiv').innerHTML = `
+                <p><strong>First Name:</strong> ${firstName}</p>
+                <p><strong>Department:</strong> ${department}</p>
+                <p><strong>Student ID:</strong> ${studentId}</p>
+            `;
+                } else {
+                    alert('No data found for this Student ID');
+                }
+            }).catch((error) => {
+                alert('Error: ' + error.message);
+                console.log(error);
+            });
+        }
+        // Event listener for the retrieve button
+        document.getElementById('retBtn').addEventListener('click', RetData);
+
+
+    </script>
+
+</body>
+
+</html>

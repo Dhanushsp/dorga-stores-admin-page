@@ -98,6 +98,7 @@
             let imagePath;
             let imageUrl;
 
+            // creating referenc ID to the product upload in Firebase storage
             if (id) {
                 imageRef = storageRef(storage, `products/${id}`);
             } else {
@@ -106,6 +107,8 @@
                 imageRef = storageRef(storage, `products/${id}`);
             }
 
+
+            // Storing the product data using that generated ID.
             uploadBytes(imageRef, productImage).then((snapshot) => {
                 return getDownloadURL(snapshot.ref);
             }).then((url) => {
